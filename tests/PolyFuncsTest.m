@@ -103,3 +103,68 @@ verifyEqual(testCase, sum(w .* x.^6), 2/7, 'RelTol', 1e-10);
 % And the integral of x (odd) is 0.
 verifyEqual(testCase, sum(w .* x), 0, 'AbsTol', 1e-12);
 end
+
+
+% --- lobpoly (Lagrange interpolants at LGL nodes) ------------------------
+
+function testLobpolyKroneckerDeltaProperty(testCase)
+% lobpoly(n) returns (n+1) Lagrange polynomials, where column j is the
+% polynomial that equals 1 at the j-th LGL node and 0 at every other
+% node. lobpoly flips the node order before building, so we evaluate
+% against the same flipped grid.
+n = 4;
+P = lobpoly(n);
+xi = fliplr(lgnodes(n));
+for j = 1:n+1
+    for k = 1:n+1
+        if j == k
+            verifyEqual(testCase, polyval(P(:,j), xi(k)), 1, ...
+                'AbsTol', 1e-10);
+        else
+            verifyEqual(testCase, polyval(P(:,j), xi(k)), 0, ...
+                'AbsTol', 1e-10);
+        end
+    end
+end
+end
+
+function testLobpolyPartitionOfUnity(testCase)
+% A nodal basis is a partition of unity: sum_j L_j(x) = 1 for any x.
+n = 4;
+P = lobpoly(n);
+xs = linspace(-1, 1, 11);
+for k = 1:numel(xs)
+    total = 0;
+    for j = 1:n+1
+        total = total + polyval(P(:,j), xs(k));
+    end
+    verifyEqual(testCase, total, 1, 'AbsTol', 1e-10);
+end
+end
+
+
+% --- node_av_global ------------------------------------------------------
+
+function testNodeAvGlobalAveragesConstants(testCase)
+% Two-element piecewise polynomial: constant 1 on the left, constant 2
+% on the right. The single interior interface should be averaged to 1.5.
+% Coefficient convention: column j is [a_n; ...; a_0] for element j.
+left  = [0; 0; 1];   % polynomial == 1
+right = [0; 0; 2];   % polynomial == 2
+p = [left, right];
+verifyEqual(testCase, node_av_global(p), 1.5, 'AbsTol', 1e-12);
+end
+
+function testNodeAvGlobalLinearOnEachElement(testCase)
+% Three elements, each linear in xi in [-1, 1]:
+%   p1(xi) = xi      -> right end value  1
+%   p2(xi) = xi + 4  -> left end value   3, right end value  5
+%   p3(xi) = 2*xi    -> left end value  -2
+% Interface 1: 0.5*(1 + 3)   = 2
+% Interface 2: 0.5*(5 + (-2)) = 1.5
+p1 = [0; 1; 0];
+p2 = [0; 1; 4];
+p3 = [0; 2; 0];
+p = [p1, p2, p3];
+verifyEqual(testCase, node_av_global(p), [2; 1.5], 'AbsTol', 1e-12);
+end
