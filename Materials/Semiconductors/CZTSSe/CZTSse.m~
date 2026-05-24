@@ -1,0 +1,97 @@
+close all;
+clc;
+VEg=[0.947,1.1,1.15,1.2];
+%disp(VEg);
+lambda=[1,300,600,900,1100];
+CZTS=xlsread('./Materials/Semiconductors/CZTSse/CZTS1.xlsx');
+CZTS2=interp1(CZTS,lambda);
+disp(CZTS2)
+l1=length(VEg);
+ReCZTS=[];
+ImCZTS=[];
+for i=1:l1
+ReCZTS=[ReCZTS,CZTS2(:,3)];
+ImCZTS=[ImCZTS,CZTS2(:,2)];
+end
+
+if size(lambda,2)>size(lambda,1)
+    lambda = lambda.';
+end
+
+if size(VEg,1)>size(VEg,2)
+    VEg = VEg.';
+end
+%disp(lambda);
+yin = 0.9;
+
+ee = (1240./(lambda+300));
+disp(ee);
+xin = interp1([0.947, 1.5], [0, 1], VEg);
+
+
+
+
+Ep = [1.177, 2.401, 3.789, 5.549, 5.886].';
+
+A = [11.12, 25.14, 63.40, 173.08, 231.27].';
+
+C = [1.133, 1.664, 1.563, 2.205, 2.009].';
+
+Eg = [0.86, 1.15, 2.598, 3.566, 5.455].';
+
+epsinf = [0.77, 1.288];
+
+gamma = sqrt(Ep.^2 - C.^2/2);
+beta = sqrt(4*Ep.^2 - C.^2);
+
+x = [0, 1];
+j0 = 2 - (xin<1);
+j1 = 3 - (xin<=1);
+
+xi = (j0 ~= j1) .*  (xin - x(j0))./(x(j1) - x(j0));
+xi(isnan(xi))= 1;
+
+% Create deltas for both samples
+delataEg=VEg-0.86;
+
+eelower = ee -delataEg; 
+
+disp(eelower);
+
+% Create function for each sample
+eps1lower = ones(length(ee), length(xin));
+
+
+test1lower = zeros(length(ee), length(xin));
+
+
+
+for i = 1:5
+   xi4lower = (eelower.^2 - gamma(i,j0).^2).^2 + beta(i,j0).^2 .* C(i,j0).^2/4;
+  
+   atanlower = (eelower.^2 - Ep(i,j0).^2) .* (Ep(i,j0).^2 + Eg(i,j0).^2) + Eg(i,j0).^2 .* C(i,j0).^2;
+ 
+   
+   alnlower = (Eg(i,j0).^2 - Ep(i,j0).^2) .* eelower.^2 + Eg(i,j0).^2 .* C(i,j0).^2 - Ep(i,j0).^2 .*(Ep(i,j0).^2 + 3 * Eg(i,j0).^2);
+   
+   
+   eps1lower = eps1lower +  ...
+       (A(i,j0).*C(i,j0) .* alnlower./(2 * pi *  xi4lower .* beta(i,j0) .* Ep(i,j0))) .* log((Ep(i,j0).^2 +Eg(i,j0).^2 + beta(i,j0) .* Eg(i,j0))./((Ep(i,j0).^2 +Eg(i,j0).^2 - beta(i,j0) .* Eg(i,j0))));
+
+end
+
+eps1lower = eps1lower+test1lower;
+
+eps2lower = zeros(length(ee), length(xin));
+
+for i = 1:5
+   eps2lower = eps2lower + (eelower > Eg(i, j0)) .* A(i, j0) .* C(i, j0).*Ep(i, j0).*(eelower - Eg(i, j0)).^2./((eelower.^2-Ep(i, j0).^2).^2.*eelower + C(i, j0).^2 .*eelower.^3);
+  
+end
+disp(eps2lower);
+eps1 = eps1lower * diag(1-xi) + ReCZTS * diag(xi);
+
+eps2 = eps2lower * diag(1-xi) + ImCZTS * diag(xi);
+
+
+eps = (eps1 + 1i*eps2).'

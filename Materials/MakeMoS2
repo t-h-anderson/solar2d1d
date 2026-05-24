@@ -1,0 +1,17 @@
+
+clear();
+
+reference = 'Optics, Minoura 2015, https://doi.org/10.1063/1.4921300, Electrical, Bhuiyan 2012 CIGS modelling, Markus Thesis';
+VEg=[1.15];
+VChi=[4.5];
+icm3Nc = [7e17];
+icm3Nv = [4.5e18];
+cm2iVismun = [40];
+cm2iVismup = [12.6];
+epsdc = [14];
+eps = '@(nmlambda, VEg) CIGs(nmlambda, VEg)';
+alpha = [1e-10];
+istausrhn = [7.4e-9];
+istausrhp = [7.4e-9];
+
+save('./Materials/Semiconductors/MoS2.mat')

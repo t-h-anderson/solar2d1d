@@ -1,0 +1,288 @@
+% !TeX spellcheck = en_US
+\documentclass[]{article}  %>>> use for US letter paper
+\usepackage{graphicx} % eps support
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{lscape}
+\usepackage{epstopdf}
+%\usepackage[square,numbers]{natbib}
+\usepackage {color}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage[usenames,dvipsnames,table]{xcolor}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{mathtools}
+\usepackage{tocloft}
+\usepackage{lineno}
+
+
+
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\def\red{\textcolor{red}}
+\def\blue{\textcolor{blue}}
+\def\green{\textcolor{green}}
+\def\magenta{\textcolor{magenta}}
+\definecolor{lightgray}{gray}{0.8}
+\definecolor{llightgray}{gray}{0.95}
+\renewcommand{\d}{\!\operatorname{d}\!}
+
+
+%for 3-vectors/dyadics
+\def\##1{{\bf #1}}
+\def\=#1{\underline{\underline{#1}}}
+
+\def\*#1{\breve{{\bf #1}}}
+\def\+#1{\breve{\underline{\underline #1}}}
+
+ 
+
+
+\def\r#1{(\ref{#1})}
+\def\l#1{\label{#1}}
+\def\c#1{\cite{#1}}
+
+\def\le{\left(}
+\def\ri{\right)}
+\def\les{\left[}
+\def\ris{\right]}
+\def\lec{\left\{}
+\def\ric{\right\}}
+
+\def\.{\mbox{ \tiny{$^\bullet$} }}
+
+\def\eps{\varepsilon}
+
+\def\Nbar{\ensuremath{\bar{N}}}
+\def\nopt{n_{\rm opt}}
+
+
+\def\O{\scriptscriptstyle 0}
+\def\epso{\eps_{\scriptscriptstyle 0}}
+ \def\alphao{\alpha_{\scriptscriptstyle 0}}
+\def\lambdao{\lambda_{\scriptscriptstyle 0}}
+\def\muo{\mu_{\scriptscriptstyle 0}}
+\def\omegao{\omega_{\scriptscriptstyle 0}}
+\def\etao{\eta_{\scriptscriptstyle 0}}
+\def\kappao{k_{\scriptscriptstyle 0}}
+\def\ko{k_{\scriptscriptstyle 0}}
+\def\co{c_{\scriptscriptstyle 0}}
+\def\Eo{\#E_{\, \scriptscriptstyle 0}}
+\def\Ho{\#H_{\, \scriptscriptstyle 0}}
+
+\def\lambdaomin{\lambda_{\O_{min}}}
+\def\lambdaomax{\lambda_{\O_{max}}}
+
+
+\def\sfE{{\sf E}}
+
+\def\epsa{\eps_a(\omega)}
+\def\epsb{\eps_b(\omega)}
+\def\epsc{\eps_c(\omega)}
+\def\epsd{\tilde{\eps }_d}
+\def\epsref{\=\eps ^\circ_{ref}(\omega)}
+
+\def\epsR{\eps'_R}
+\def\epsI{\eps'_I}
+\def\muR{\mu'_R}
+\def\muI{\mu'_I}
+
+\def\obs{^{obs}}
+
+
+\def\ct{\cos\theta}
+\def\st{\sin\theta}
+
+\def\I{\*I}
+\def\curl{\nabla\times}
+\def\ux{\hat{\underline x}}
+\def\uy{\hat{\underline y}}
+\def\uz{\hat{\underline z}}
+
+
+\def\Er{\#E(\#r,\omega)}
+\def\Hr{\#H(\#r,\omega)}
+\def\DDr{\#D(\#r,\omega)}
+\def\Br{\#B(\#r,\omega)}
+
+\def\gmet{g_{\alpha\beta}}
+\def\gmetm{{}^{(m)}\tilde{g}_{\alpha\beta}}
+\def\fmetm{{}^{(m)}d_{\alpha\beta}}
+\def\tr{(ct,\#r)}
+\def\ok{(\omega/c,\#k)}
+
+\def\calX{{\cal X}}
+\def\calXm{{}^{(m)}{\cal X}}
+
+\def\gammam{{}^{(m)}\={\tilde\gamma}}
+\def\Gammam{{}^{(m)}\#{\tilde\Gamma}}
+
+\def\mm{\,{}^{(m)}}
+
+\def\det{\mbox{det}}
+\def\adj{\mbox{adj}}
+\def\Tr{\mbox{tr}}
+
+\def\param{\xi}
+\def\InGaN{\ensuremath{\mbox{In}_\param\mbox{Ga}_{1\mbox{\tiny-}\param}\mbox{N}}}
+\def\InGaNn{\ensuremath{\mbox{In}_\param\mbox{Ga}_{1\mbox{\tiny-}\param}\mbox{N}}}
+\def\JscOpt{\ensuremath{J_{SC}^{Opt}}}
+\def\mAcm2{mA~cm\ensuremath{^{-2}}}
+
+\newcommand{\dy}[1]{\underline{\underline{#1}}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\diff}[2]{\frac{d#1}{d#2}}
+\newcommand{\grad}{\nabla}
+\renewcommand{\div}{\nabla\cdot}
+\newcommand{\rt}{(\#r,t)}
+\renewcommand{\r}{(\#r)}
+\newcommand{\rz}{(\#r,0)}
+%\renewcommand{\_}[1]{\underline{#1}}
+
+\makeatletter
+\DeclareRobustCommand{\em}{%
+	\@nomath\em \if b\expandafter\@car\f@series\@nil
+	\normalfont \else \ttfamily \fi}
+\makeatother
+
+
+\begin{document}
+
+\section{1D RCWA and HDG Code}
+
+Here is a short manual on how each section of the code works and how to build a simulation. Please let me know (tom.harper.anderson@gmail.com) if more information is needed and I will develop this further.
+
+	\subsection{RunSim}
+	
+The simplest way to run the code. This method contains all the important parts needed to run the code and can be used as a template to build more interesting simulations. Important to set \emph{DesignSim} and \emph{DesignJunction} before running (see below for details).
+
+	\subsection{RunOptimisation}
+	
+	Requires a little more setup, but also runs DEA to optimise the design over the contents of \emph{paramDefCell}. Must set \emph{DesignSim}, \emph{DesignJunction} and \emph{DesignDE} before running.
+	
+	\emph{paramDefCell} elements are built from a label, a range, a resolution, and a starting value, e.g. 
+	\begin{verbatim}
+		 paramDefCell = {
+			 'nmLx', [100 1500], 1, 500;
+		}
+	\end{verbatim}
+	means, define a parameter nmLx (the period of the device, say), look in the range nmLx$\in[100, 1500]$, with integer values, with an initial value of 500.
+	
+	The objective function OptoElec (set with \emph{objFctHandle = @OptoElec;}) must be changed for a change to paramDefCell. See function descriptions later.
+	
+	Other options can be set here pertaining to DEA. These should be moved to \emph{DesignDE} at some point.
+	
+	Differential evolution is called using differentialevolution. This version is based on the code by Markus Buehren, 30.08.2014. I have tweaked this to return multiple values from an objective function calculation (not the values being optimised) and save them to the output, e.g. the fill factor.
+	
+	\subsection{RunPoint}
+
+	Again, requires a little more setup. Reruns a calculation stored in a DEA output. This is useful to look at the details of one of the points, or to see why a point failed to be computed. Note, \emph{DesignSim}, \emph{DesignJunction} and \emph{DesignDE} must be the same as when the optimisation simulation was run otherwise the results may be different. May be nice to add a copy of these to the save file.
+	
+	To run, firstly load a results file, e.g. \emph{OptoElec\_result\_MATH\_02.mat}. Then choose a solution number you want to recalculate. In workspace, double click \emph{optimResult}. All the evaluation values are stored in the section \emph{allSubEvaluationValues}. The number of the simulation is the column number. Enter this number as \emph{pointno}. Copy the mapping from params to sim (see OptoElec below) so it matches from the original optimisation simulation.
+	
+
+\section{Important functions}
+
+\subsection{DesignSim}
+Most things are labeled clearly (I hope) in here.
+
+Two structures are created. One to setup the optical simulation, one to setup the electrical simulation. \emph{optical\_toggle} and \emph{electrical\_toggle} turn the sections of the simulation off (0) or on (1). 
+\subsubsection{Optical}
+The number of entries in \emph{nslices} must match the number of section set in \emph{DesignJunction}. 
+
+\subsubsection{Electrical}
+The number of entries in \emph{nx\_sec} must match the number of section flagged to be electrical in \emph{DesignJunction}, (see \emph{sim.material.elecsec}).
+
+\subsection{DesignJunction}
+Most things are labeled clearly (I hope) in here.
+
+Three structures are created. 
+
+\subsubsection{input}
+The first need incorporating into other structures at some point (?) but sets the width, the external voltage (leave at 0), and the generation rate. The generation rate can be a number (constant generation everywhere), an array of numbers with length of the number or electrical sections (see \emph{sim.material.elecsec}), or a function. See below for function input details.
+
+\subsubsection{material}
+Design the baseline properties of the device here. Make sure \emph{nsec} matches the lengths of each array specified. Single entries are duplicated up to this length internally (i.e. constant everywhere).
+
+Periodic sections, e.g. the grating are specified using 
+\begin{verbatim}
+'periodicsec', [0,0,0,0,0,1,0], ...
+\end{verbatim}
+In this example, the penultimate section is periodic. When material data is loaded (see below) the material specified is the material closes to the edge of the domain. Periodic section details are loaded from \emph{periodic}, see below.
+
+Inputs which take strings must contain nsec-1 '\&' symbols to distinguish between sections, e.g. the line
+\begin{verbatim}
+    'material', 'Air & Glass & CIGS & CIGS & CIGS & User & Silver' , ... 
+\end{verbatim}
+tells the model builder to load the material properties for air for the 1st section, glass for the second, etc. This overwrites the specified parameters below if those parameters are in the data file. For user entered properties, specify the section material as `User' and so uses the values specified below. For string input, spaces round the '\&' do not matter, but capitalization does.
+
+
+\subsubsection{Electrical}
+The number of entries in \emph{nx\_sec} must match the number of section flagged to be periodic in \emph{sim.material.periodic}.
+
+Periodic sections can either be specified using a surface function $g(x)$ or a width function $f(z)$. Note that only periodic sections with a single protrusion are implemented, e.g. a square grating, or a bump, and so only a single period can be simulated.
+
+For \emph{zeta} it is possible to specify a constant, e.g. 0.5 creates a square grating with 0.5 duty cycle, or a function, e.g. \emph{'@(z) (1/pi) * acos(z/80)'} creates a sinusoidal grating when Lg = 80. Notice that the input, z, is scaled to run from 0 to 1, while the output is also scale from 0 to 1. With \emph{relief}, it is possible to specify the surface, e.g. \emph{'@(zeta) cos(2*pi*zeta)'} also creates the same sinusoidal grating. Toggle between these options with \emph{zr\_flag}.
+
+\subsubsection{Functional Inputs}
+Scaling for functional inputs should be played with to make sure the domains and ranges are correct. Where a function is supplied the domain is 0 for one side of the section, to 1 at the other side of the section. Multiple functions are specified as e.g. \emph{'@(z) cos(2*pi*z) \& @(z) z + 1'}. This again should match the number of required sections.
+
+\subsection{DesignDE}
+See DE documentation.
+
+\emph{NP} sets the number of populations per iteration, \emph{subFoMNames} specifies the labels to use for the other calculated values that will be saved when optimising.
+
+
+\subsection{OptoElec}
+Here, you need to specify the mapping between \emph{params} and \emph{sim}. Set length of \emph{fom} to one more than the number of \emph{subFoMNames} set before. The first entry \emph{fom\{1\}} is the parameter to maximize using DEA. You will also have to add these fom manually below.
+
+
+\subsection{GUI}
+Allows viewing of the data from a DEA run. Just load the data and type \emph{GUI(optimResult)}. Should be self explanatory interface.
+
+\subsection{MakeCdS}
+The material make files are stored in folder \emph{Materials}. These construct the data files which are loaded when a material is loaded. To add a new material, keep to the same format as those provided. If information isn't provided, the user specified value will be used. To catch if this is the case, may be good to set user specified to nan. To load the data, use the generated .mat file name as the material name.
+
+\subsection{exportresults}
+Run using \emph{(exportresults(sim)}, to save the current electrical simulation results -- e.g. the carrier densities as a function of position. These are rebuilt from the interpolating polynomials up to a specified number of points.
+
+\section{Data Processing}
+Processing of the data was done in Mathematica using \emph{Processing.nb} - This file needs tidying but the important bits should be obvious. Optimisation data (load me first) can be exported from matlab to csv file via 
+\begin{verbatim}
+toexport=[...
+optimResult.allTestedMembers;...
+optimResult.allEvaluationValues; ...
+optimResult.allSubEvaluationValues];
+\end{verbatim}
+followed by 
+\begin{verbatim}
+csvwrite('...location...',toexport)
+\end{verbatim}
+
+The resulting file contains every population member, and all of the subevaluation values.
+
+Once the csv file is loaded into Mathematica, FOM should be set to look at the correct location for what you want to plot on the y--axis. With -1 being the last entry, the required number can be found in \emph{DesignDE}, under \emph{DEParamsDefault.subFoMNames} - count back from the end of the list to the required variable.
+
+\emph{paramNo} should be set to the parameter that wantd plotting on the x--axis. I suggest counting forwards using the dropdown list in \emph{GUI} or \emph{RunOptimisation} (\emph{paramDefCell}).
+
+If the mapping in \emph{OptoElec} is non-trivial, this mapping should be replicated here to convert to simulation, rather than DEA, variables.
+
+You will need to manually go to ``\emph{AxisLabel}'' to change the x--axis to match the data. Hints: (1) Ctrl+Shift+`6' is superscript, ... + `-' is subscript and ... + `5' places a superscript over a subscript. (2) to access Greek letters, type e.g. `\emph{\textbackslash[Eta]}' for $\eta$ -- notice the capitalisation. Capital Greek letters are e.g. `\emph{\textbackslash[CapitalOmega]}' for $\Omega$.
+
+
+\section{More notes}
+To reproduce Figs XX and YY in the final document (plus more) run 
+\begin{verbatim}
+RunOptStudyPiN
+RunOptStudy
+\end{verbatim}
+\end{document}
+
+
+
+

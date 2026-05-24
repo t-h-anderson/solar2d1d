@@ -1,0 +1,107 @@
+clc;
+clear all
+close all
+CZTSS1=[278        281.7        284.9        288.3        291.6          295        298.7        302.3          306 ...
+    309.9        313.8        317.8        321.9        326.2        330.5          335        339.6        344.3 ...
+    349.2        354.1        359.3        364.6          370        375.6        381.4        387.3        393.5 ...
+    399.8        406.4        413.2        420.2        427.4        434.9        442.7        450.7        459.1 ...
+    467.7        476.7        486.1        495.8        505.9        516.6        527.4        538.9        550.9 ...
+    563.4        576.5        590.2        604.6        619.8        635.6        652.4          670        688.6 ...
+    708.3        729.1        751.2        774.7        799.7        826.3        854.8        885.4        918.1 ...
+    953.5        991.6         1033         1078         1127         1180         1240         1305         1377 ...
+    1458         1549         1653         1771         1907         2066; ...
+     6.74         6.88            7         7.12         7.23        7.343         7.43        7.504        7.558 ...
+    7.599         7.62        7.615        7.591         7.54         7.48          7.4         7.33         7.25 ...
+    7.18         7.13         7.08         7.04         7.01            7        6.992        6.998            7 ...
+    7.01         7.04         7.08         7.14        7.204         7.27         7.33          7.4         7.47 ...
+    7.547        7.607         7.66        7.708        7.739        7.773        7.798        7.816        7.833 ...
+    7.838        7.834         7.82        7.814        7.811        7.812        7.811         7.82         7.84 ...
+    7.86          7.9         7.96         8.02         8.07         8.12         8.16         8.17         8.16 ...
+    8.11         8.03         7.93         7.82         7.69         7.57         7.47         7.38         7.32 ...
+    7.27         7.25        7.239        7.234         7.19         7.15; ...
+    5.92         5.79         5.66        5.527         5.38         5.23        5.061        4.868         4.67 ...
+    4.46         4.25         4.05         3.87         3.71         3.57         3.45         3.37        3.309 ...
+    3.26         3.22         3.19        3.175        3.172        3.175        3.188          3.2         3.21 ...
+    3.22         3.24        3.251        3.252         3.24         3.22         3.19         3.14         3.08 ...
+    3.01        2.929         2.83         2.73        2.615         2.48         2.37         2.26         2.16 ...
+    2.06         1.97         1.89         1.82         1.76          1.7         1.64         1.58         1.53 ...
+    1.48        1.433         1.37         1.31         1.21         1.09         0.94         0.78         0.61 ...
+    0.45          0.3         0.18         0.08        0.019            0            0            0            0 ...
+    0            0            0            0            0            0];
+CZTSS=CZTSS1.';
+
+VEg=[0.91, 1.5];
+xin = interp1([0.91, 1.5], [0, 1], VEg);
+lambda=[300:10:1500];
+
+if size(lambda,2)>size(lambda,1)
+    lambda = lambda.';
+end
+
+if size(VEg,1)>size(VEg,2)
+    VEg = VEg.';
+end
+ee=1240./lambda;
+x = [0, 1];
+j0 = 2 - (xin<1);
+j1 = 3 - (xin<=1);
+xi = (j0 ~= j1) .*  (xin - x(j0))./(x(j1) - x(j0));
+xi(isnan(xi))= 1;
+
+% Create deltas for both samples
+
+eelower = ee-0.34*xi; 
+ReCZTS=interp1(CZTSS(:,1),CZTSS(:,2),lambda);
+ImCZTS=interp1(CZTSS(:,1),CZTSS(:,3),lambda);
+%disp(ReCZTS);
+ReCZTS1=[];
+ImCZTS1=[];
+for i=1:length(VEg)
+ReCZTS1=[ReCZTS1,ReCZTS];
+ImCZTS1=[ImCZTS1,ImCZTS];
+end
+
+Ep = [1.177, 2.401, 3.789, 4.549,5.886].';
+
+A = [11.12, 25.14, 63.40, 173.08, 231.27].';
+
+C = [1.33, 1.664, 1.563, 2.205, 2.009].';
+
+Eg = [0.7, 1.15,2.598, 3.566, 5.455].';
+
+
+epsinf = 0.77;
+
+gamma = sqrt(Ep.^2 - C.^2/2);
+beta = sqrt(4*Ep.^2 - C.^2);
+eps1lower = ones(length(ee), length(xin));
+eps2lower = ones(length(ee), length(xin));
+
+for i = 1:5
+   eps2lower =eps2lower+ (eelower > Eg(i)) .*A(i) .* C(i).*Ep(i).*(eelower - Eg(i)).^2./((eelower.^2-Ep(i).^2).^2.*eelower + C(i).^2 .*eelower.^3); 
+end
+
+for i = 1:5
+   xi4lower = (eelower.^2 - gamma(i).^2).^2 + beta(i).^2 .* C(i).^2/4;
+  
+   atanlower = (eelower.^2 - Ep(i).^2) .* (Ep(i).^2 + Eg(i).^2) + Eg(i).^2 .* C(i).^2;
+  
+   
+   alnlower = (Eg(i).^2 - Ep(i).^2) .* eelower.^2 + Eg(i).^2 .* C(i).^2 - Ep(i).^2 .*(Ep(i).^2 + 3 * Eg(i).^2);
+  
+   
+   eps1lower = eps1lower +  ...
+       (A(i).*C(i) .* alnlower./(2 * pi *  xi4lower .* beta(i) .* Ep(i))) .* log((Ep(i).^2 +Eg(i).^2 + beta(i) .* Eg(i))./((Ep(i).^2 +Eg(i).^2 - beta(i) .* Eg(i))))-...
+      (A(i) .* atanlower./(pi *  xi4lower .* Ep(i))) .* (pi - atan((2*Eg(i) + beta(i))./C(i)) + atan((- 2*Eg(i) + beta(i))./C(i))   )+...
+     2*(A(i) .* Ep(i) .* Eg(i) .* (eelower.^2 - gamma(i).^2))./(pi *  xi4lower .* beta(i)) .* (pi + 2* atan(2*(gamma(i).^2 - Eg(i).^2)./(beta(i).*C(i)))  )-...
+    (A(i) .* Ep(i) .* C(i) .* (eelower.^2 + Eg(i).^2))./(pi *  xi4lower .* eelower) .* log(abs(eelower-Eg(i))./(eelower + Eg(i)))+...
+     2*(A(i) .* Ep(i) .* C(i) .* Eg(i))./(pi *  xi4lower) .* log(abs(eelower-Eg(i)).*(eelower + Eg(i))./sqrt((Ep(i).^2-  Eg(i).^2).^2 + Eg(i).^2.*C(i).^2)); 
+    
+
+end
+eps1lower =eps1lower+epsinf ;
+eps1 = eps1lower *diag(1-xi) + ReCZTS1 *diag(xi);
+eps2 = eps2lower *diag(1-xi) + ImCZTS1 *diag(xi);
+eps=eps1+1i*eps2;
+
+disp(eps)
