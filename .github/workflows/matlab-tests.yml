@@ -1,0 +1,47 @@
+name: MATLAB tests
+
+on:
+  push:
+    branches: [main, claude/**]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run matlab.unittest suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Public repos can install MATLAB on GitHub-hosted runners without a
+      # licence token (MathWorks GitHub-hosted licensing). For private
+      # repos set the MATHWORKS_TOKEN secret in the repo settings.
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          cache: true
+
+      # We can't use matlab-actions/run-tests directly because its
+      # source-folder option does not recurse, but the codebase has tests
+      # that call into Conversions/, DDNewton/PolyFuncs/, RCWA/, ...
+      # runAllTests.m bootstraps the path with addpath(genpath(repo)).
+      - name: Run tests
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            cd('${{ github.workspace }}');
+            addpath(fullfile(pwd, 'tests'));
+            runAllTests( ...
+                'JUnit', 'test-results/junit.xml', ...
+                'Cobertura', 'test-results/coverage.xml', ...
+                'FailOnError', true);
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/

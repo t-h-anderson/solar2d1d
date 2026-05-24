@@ -24,7 +24,14 @@ objFctHandle = @OptoElec;
 
 optical = 1;
 
-switch 3
+% Parameter-set selector. Was a hard-coded `switch 3` in the original;
+% lifted to a variable so callers can pick without editing the source.
+%   1 = three-section graded bandgap (Eg0..Eg1)
+%   2 = single bandgap (Eg_p) - PiN refinement, Peter
+%   3 = sinusoidal-profile absorber (A, kappa, phi, alpha, Eg0)
+paramSetCase = 3;
+
+switch paramSetCase
     case 1
         paramDefCell = {
             'nmLx', [100 1500], 1, 500;
