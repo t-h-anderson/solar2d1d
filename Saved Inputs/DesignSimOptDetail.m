@@ -90,7 +90,10 @@ sim.electrical.setup = struct(...
 % Make sure nslices is correct lenght
 diff =  sim.material.nsec - length(sim.optical.setup.nslices);
 if diff > 0
-    sim.optical.setup.nslices = padarray(sim.optical.setup.nslices, [0,1], diff, 'post');
+    % See note in DesignSim.m: preserves the original padarray behaviour
+    % (append a single trailing element of value `diff`) while dropping the
+    % Image Processing Toolbox dependency.
+    sim.optical.setup.nslices = [sim.optical.setup.nslices, diff];
 end
 
 sim.optical.setup.Nt = sim.optical.setup.minNt;

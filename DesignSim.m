@@ -101,7 +101,12 @@ sim.electrical.setup.total_time = toc(sim.electrical.setup.start_time);
 % Make sure nslices is correct lenght
 diff =  sim.material.nsec - length(sim.optical.setup.nslices);
 if diff > 0
-    sim.optical.setup.nslices = padarray(sim.optical.setup.nslices, [0,1], diff, 'post');
+    % NOTE: original padarray(nslices, [0,1], diff, 'post') appends a single
+    % trailing element equal to `diff`, not `diff` trailing elements -- this
+    % looks like a long-standing off-by-N bug. Preserving exact behaviour
+    % here and dropping the Image Processing Toolbox dependency; fix the
+    % semantics in a separate change.
+    sim.optical.setup.nslices = [sim.optical.setup.nslices, diff];
 end
 
 % Set Nt to minNt

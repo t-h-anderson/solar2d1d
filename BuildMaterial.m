@@ -180,7 +180,10 @@ for i = 1:sim.setup.Nz
     current = zetalist{i};
     len = length(current);
     if len < maxlength
-        zetalist{i} = padarray(current, maxlength - len, 0.5,  'post');
+        % padarray(current, maxlength-len, 0.5, 'post'): extend a column
+        % zeta vector with 0.5 at the trailing end so all slices line up.
+        % Inlined to avoid the Image Processing Toolbox.
+        zetalist{i} = [current; 0.5 * ones(maxlength - len, 1)];
     end
 end
 

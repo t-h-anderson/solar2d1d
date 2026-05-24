@@ -248,8 +248,13 @@ sim.global.DR = kron(eye(nx), sim.local.DR.');
 sim.global.DL = kron(eye(nx), sim.local.DL.');
 sim.global.D1 = sim.global.DR-sim.global.DL;
 
-sim.global.SR = padarray(kron(eye(nx-1), sim.local.SR), [0,pdeg1],  0, 'post');
-sim.global.SL = padarray(kron(eye(nx-1), sim.local.SL), [0,pdeg1],  0, 'pre' );
+% padarray(..., [0, pdeg1], 0, 'post'/'pre'): pad pdeg1 zero columns on the
+% trailing/leading side of the kron block. Inlined to avoid the Image
+% Processing Toolbox dependency.
+SRblock = kron(eye(nx-1), sim.local.SR);
+SLblock = kron(eye(nx-1), sim.local.SL);
+sim.global.SR = [SRblock, zeros(size(SRblock, 1), pdeg1)];
+sim.global.SL = [zeros(size(SLblock, 1), pdeg1), SLblock];
 
 sim.global.S_psi_n = sim.global.DeltaChi * sim.global.SL - sim.global.SR;
 sim.global.S_psi_p = sim.global.DeltaChiEg * sim.global.SL - sim.global.SR;
