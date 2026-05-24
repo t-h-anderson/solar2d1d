@@ -22,11 +22,11 @@ tidied, tested, and migrated to OOP.
 | `Materials/DataFiles/` | Source spreadsheets/CSVs for material properties |
 | `Conversions/` | One-line unit conversions |
 | `DEA/` | Differential-evolution optimisation (Buehren) |
-| `Results/` | Historical simulation outputs (research artefacts) |
 | `Saved Inputs/` | Sample `Design*.m` configurations |
-| `Slaves/` | Empty by default; file-semaphore mailbox for DE workers |
+| `Slaves/`, `*/Slaves/` | Empty by default; file-semaphore mailbox for DE workers |
 | `GUI.m`, `GUI.fig` | Legacy GUIDE GUI (GUIDE removed in MATLAB R2025b) |
 | `legacy/scratch/` | Historical scratch / dev-note files preserved for reference |
+| `legacy/notebooks/` | Mathematica derivation notebooks (reference only) |
 | `ReadMe.tex` | Original LaTeX notes on the algorithm |
 
 ## Running
@@ -45,12 +45,17 @@ three DE slaves.
 
 Active modernisation:
 
-1. Hygiene pass (this commit): remove editor backups, transient slave
-   mailbox files, per-host result/timing artefacts; add `.gitignore`;
-   move scratch files to `legacy/`; lift the hard-coded `switch 3`
-   bandgap-profile selector in `OptoElec.m` onto `params`.
-2. Golden regression tests (planned).
-3. Migrate the `sim` struct to MATLAB classes; replace GUIDE GUI with
+1. Hygiene pass: remove editor backups, transient slave mailbox files,
+   per-host result/timing artefacts; add `.gitignore`; move scratch
+   files to `legacy/`; lift the hard-coded `switch 3` bandgap-profile
+   selector in `OptoElec.m` onto `params`.
+2. Data purge: drop `Results/` historical outputs (84 files, never
+   referenced from code); drop duplicate `SSAM15G.xlsx` at root; move
+   Mathematica notebooks to `legacy/notebooks/`; move paper-plot
+   script + `prometheus1.csv` to `legacy/scratch/`; relocate root
+   `CZTS.xlsx` into `Materials/DataFiles/` and fix the read path.
+3. Golden regression tests (planned).
+4. Migrate the `sim` struct to MATLAB classes; replace GUIDE GUI with
    App Designer.
 
 ## Known issues

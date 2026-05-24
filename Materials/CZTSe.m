@@ -5,7 +5,7 @@ eps11=[];
 eps22=[];
  for xin=0:0.1:1   
 lambda=[300:10:1400];
-CZTS=xlsread('./CZTS.xlsx');
+CZTS=xlsread(fullfile(fileparts(mfilename('fullpath')), 'DataFiles', 'CZTS.xlsx'));
 ReCZTS=interp1(CZTS(:,1),CZTS(:,2),lambda);
 ImCZTS=interp1(CZTS(:,1),CZTS(:,3),lambda);
 
