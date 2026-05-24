@@ -13,7 +13,11 @@ tidied, tested, and migrated to OOP.
 
 | Path | Contents |
 |---|---|
-| `Run*.m`, `OptoElec.m` | Top-level driver / optimisation entry points |
+| `RunSim.m` | Single forward run: `DesignJunction` -> `DesignSim` -> RCWA + DDNewton |
+| `RunPoint.m` | Single run from saved optimisation point #N |
+| `RunOptimisation.m` | Differential-evolution master |
+| `RunSlave.m` | Differential-evolution worker (started by `runview.sh`) |
+| `OptoElec.m` | Objective function called by the DE optimiser |
 | `Design*.m` | Builds the `sim` configuration struct (junction, sim setup, DE) |
 | `RCWA/` | Optical (2D, RCWA) solver |
 | `DDNewton/` | Electrical (1D, drift-diffusion + Newton) solver |
@@ -26,6 +30,8 @@ tidied, tested, and migrated to OOP.
 | `Slaves/`, `*/Slaves/` | Empty by default; file-semaphore mailbox for DE workers |
 | `GUI.m`, `GUI.fig` | Legacy GUIDE GUI (GUIDE removed in MATLAB R2025b) |
 | `legacy/scratch/` | Historical scratch / dev-note files preserved for reference |
+| `legacy/studies/` | Frozen paper-specific run scripts (convergence studies, param scans) |
+| `legacy/notebooks/` | Mathematica notebooks used for analytic derivations |
 | `legacy/notebooks/` | Mathematica derivation notebooks (reference only) |
 | `ReadMe.tex` | Original LaTeX notes on the algorithm |
 
