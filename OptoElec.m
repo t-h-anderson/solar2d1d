@@ -22,7 +22,19 @@ sim.material.nmSec(8) = params.nmLg;
 sim.optical.periodic.zeta = params.zeta;
 sim.input.nmLx = params.nmLx;
 
-switch 3
+% Bandgap-profile mode for the absorber section. Was a hard-coded
+% `switch 3` in the original; lift it onto params so callers can pick
+% explicitly without editing the source.
+%   1 = linear ramp across three sub-regions
+%   2 = single flat bandgap (Eg_p)
+%   3 = sinusoidal profile with amplitude A, freq kappa, phase phi, exponent alpha
+if isfield(params, 'bandgap_profile_mode')
+    bandgap_profile_mode = params.bandgap_profile_mode;
+else
+    bandgap_profile_mode = 3;
+end
+
+switch bandgap_profile_mode
     case 1
         Eg0 = params.Eg0;
         Eg1 = params.Eg1;

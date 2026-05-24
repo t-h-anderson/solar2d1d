@@ -1,0 +1,26 @@
+# Editor backups
+*.m~
+*~
+*.swp
+.DS_Store
+
+# MATLAB transient state
+*.asv
+*.autosave
+
+# Run artefacts
+nohup.out
+logfile*.txt
+err*.txt
+junk.mat
+
+# DEA differential-evolution mailbox (regenerated each run)
+Slaves/*.mat
+DDNewton/Slaves/*.mat
+RCWA/Slaves/*.mat
+Materials/Slaves/*.mat
+
+# OptoElec per-host result/timing files written next to scripts
+OptoElec_lastresultnumber.mat
+OptoElec_result_*.mat
+OptoElec_timeover_*.mat
