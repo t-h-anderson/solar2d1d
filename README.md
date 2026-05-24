@@ -41,6 +41,29 @@ Driver scripts live at the repo root. A parallel optimisation run can be
 launched with `runview.sh`, which `nohup`s one optimisation master plus
 three DE slaves.
 
+## Tests
+
+Unit tests live under `tests/` and use MATLAB's `matlab.unittest`
+framework. From the repo root:
+
+```matlab
+runtests('tests')          % discover and run everything under tests/
+runAllTests                % same, but adds the repo to the path first
+```
+
+CI runs the suite on every push and PR via
+`.github/workflows/matlab-tests.yml` using
+[`matlab-actions/setup-matlab`](https://github.com/matlab-actions/setup-matlab)
+on a GitHub-hosted Linux runner. JUnit + Cobertura coverage reports are
+uploaded as workflow artefacts. The workflow needs no licence token for
+public repositories; for a private repo, set the `MATHWORKS_TOKEN`
+secret on the repo.
+
+Current coverage is intentionally narrow: the unit tests target leaf
+functions (`Conversions/`, `DDNewton/PolyFuncs/`, RCWA `sortmat`) that
+take primitive arguments. Coverage will broaden once the `sim` struct is
+migrated to classes.
+
 ## Status
 
 Active modernisation:
